@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Vulnerability Scraper and Points Manipulator")
         self.setGeometry(100, 100, 800, 600)
-        self.set_dark_mode()  # Ensure this method is defined
+        self.set_dark_mode()
 
         self.scraper = WebScraper()
         self.database = Database()
