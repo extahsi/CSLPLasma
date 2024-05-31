@@ -52,3 +52,56 @@ if __name__ == "__main__":
     mainWin = MainWindow()
     mainWin.show()
     sys.exit(app.exec_())
+
+from PyQt5.QtWidgets import QLabel, QLineEdit, QFormLayout
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Vulnerability Scraper and Points Manipulator")
+        self.setGeometry(100, 100, 800, 600)
+        self.set_dark_mode()
+        
+        self.scraper = WebScraper()
+        self.database = Database()
+        
+        self.initUI()
+    
+    def initUI(self):
+        layout = QVBoxLayout()
+        form_layout = QFormLayout()
+
+        self.username_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.points_input = QLineEdit()
+
+        form_layout.addRow(QLabel("Username:"), self.username_input)
+        form_layout.addRow(QLabel("Password:"), self.password_input)
+        form_layout.addRow(QLabel("New Points Balance:"), self.points_input)
+
+        button_scrape = QPushButton("Scrape for Vulnerabilities")
+        button_scrape.clicked.connect(self.scrape_vulnerabilities)
+        
+        button_update_points = QPushButton("Update Points Balance")
+        button_update_points.clicked.connect(self.update_points_balance)
+        
+        layout.addLayout(form_layout)
+        layout.addWidget(button_scrape)
+        layout.addWidget(button_update_points)
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+    
+    def scrape_vulnerabilities(self):
+        vulnerabilities = self.scraper.scrape()
+        self.database.save_vulnerabilities(vulnerabilities)
+        # Implement further logic to display scraped vulnerabilities
+
+    def update_points_balance(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+        new_points = int(self.points_input.text())
+        updated_points = self.scraper.manipulate_points(username, password, new_points)
+        # Implement further logic to confirm the points update
+        print(f"Updated points balance: {updated_points}")
