@@ -15,7 +15,7 @@ class Database:
         self.engine = create_engine('sqlite:///vulnerabilities.db')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
-    
+
     def save_vulnerabilities(self, vulnerabilities):
         session = self.Session()
         for vuln in vulnerabilities:
