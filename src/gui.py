@@ -1,8 +1,13 @@
 import sys
+import logging
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QVBoxLayout, QWidget, QLabel, QLineEdit, QFormLayout
 from PyQt5.QtGui import QPalette, QColor
 from web_scraper import WebScraper
 from database import Database
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -17,6 +22,7 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def set_dark_mode(self):
+        logger.info("Setting dark mode")
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor(53, 53, 53))
         palette.setColor(QPalette.WindowText, QColor(255, 255, 255))
@@ -33,6 +39,7 @@ class MainWindow(QMainWindow):
         self.setPalette(palette)
 
     def initUI(self):
+        logger.info("Initializing UI")
         layout = QVBoxLayout()
         form_layout = QFormLayout()
 
@@ -59,20 +66,29 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def scrape_vulnerabilities(self):
-        vulnerabilities = self.scraper.scrape()
-        self.database.save_vulnerabilities(vulnerabilities)
-        # Implement further logic to display scraped vulnerabilities
+        logger.info("Scraping for vulnerabilities")
+        try:
+            vulnerabilities = self.scraper.scrape()
+            self.database.save_vulnerabilities(vulnerabilities)
+            logger.info("Scraping completed and data saved")
+        except Exception as e:
+            logger.error(f"Error while scraping vulnerabilities: {e}")
 
     def update_points_balance(self):
         username = self.username_input.text()
         password = self.password_input.text()
         new_points = int(self.points_input.text())
-        updated_points = self.scraper.manipulate_points(username, password, new_points)
-        # Implement further logic to confirm the points update
-        print(f"Updated points balance: {updated_points}")
+        logger.info(f"Updating points balance for user {username}")
+        try:
+            updated_points = self.scraper.manipulate_points(username, password, new_points)
+            logger.info(f"Updated points balance: {updated_points}")
+        except Exception as e:
+            logger.error(f"Error while updating points balance: {e}")
 
 if __name__ == "__main__":
+    logger.info("Starting application")
     app = QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
     sys.exit(app.exec_())
+    logger.info("Application exited")
