@@ -4,27 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-
-class WebScraper:
-    def __init__(self):
-        self.url = "https://rewards.cslplasma.com/rewards"
-    
-    def scrape(self):
-        response = requests.get(self.url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Example scraping logic (to be adjusted based on actual page structure)
-        vulnerabilities = []
-        for item in soup.find_all('div', class_='vulnerability'):
-            vuln = {
-                'title': item.find('h2').text,
-                'description': item.find('p').text
-            }
-            vulnerabilities.append(vuln)
-        
-        return vulnerabilities
-
-
 class WebScraper:
     def __init__(self):
         self.url = "https://rewards.cslplasma.com/rewards"
@@ -62,3 +41,4 @@ class WebScraper:
         # Optionally, verify that the points were updated
         updated_points = self.driver.find_element(By.ID, 'points_balance').get_attribute('value')
         return updated_points
+
