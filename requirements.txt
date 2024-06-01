@@ -6,4 +6,5 @@ beautifulsoup4==4.10.0
 sqlalchemy==1.4.36
 selenium==4.1.0
 werkzeug==2.0.3
-webdriver_manager==3.5.2  # Add this line
+webdriver_manager==3.5.2
+flask_sqlalchemy==2.5.1  # Add this line
