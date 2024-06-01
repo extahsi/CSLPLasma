@@ -1,94 +1,78 @@
 import sys
-import logging
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QVBoxLayout, QWidget, QLabel, QLineEdit, QFormLayout
-from PyQt5.QtGui import QPalette, QColor
-from web_scraper import WebScraper
-from database import Database
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QPushButton, QWidget, QLineEdit
+import requests
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Vulnerability Scraper and Points Manipulator")
-        self.setGeometry(100, 100, 800, 600)
+        self.init_ui()
         self.set_dark_mode()
 
-        self.scraper = WebScraper()
-        self.database = Database()
+    def init_ui(self):
+        self.setWindowTitle('Points Balance Manager')
 
-        self.initUI()
-
-    def set_dark_mode(self):
-        logger.info("Setting dark mode")
-        palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(53, 53, 53))
-        palette.setColor(QPalette.WindowText, QColor(255, 255, 255))
-        palette.setColor(QPalette.Base, QColor(25, 25, 25))
-        palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-        palette.setColor(QPalette.ToolTipBase, QColor(255, 255, 255))
-        palette.setColor(QPalette.ToolTipText, QColor(255, 255, 255))
-        palette.setColor(QPalette.Text, QColor(255, 255, 255))
-        palette.setColor(QPalette.Button, QColor(53, 53, 53))
-        palette.setColor(QPalette.ButtonText, QColor(255, 255, 255))
-        palette.setColor(QPalette.BrightText, QColor(255, 0, 0))
-        palette.setColor(QPalette.Highlight, QColor(142, 45, 197).lighter())
-        palette.setColor(QPalette.HighlightedText, QColor(0, 0, 0))
-        self.setPalette(palette)
-
-    def initUI(self):
-        logger.info("Initializing UI")
-        layout = QVBoxLayout()
-        form_layout = QFormLayout()
-
-        self.username_input = QLineEdit()
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.label = QLabel('Current Points Balance: ')
+        self.balance_label = QLabel('Fetching...')
+        
+        self.update_label = QLabel('Update Points Balance:')
         self.points_input = QLineEdit()
 
-        form_layout.addRow(QLabel("Username:"), self.username_input)
-        form_layout.addRow(QLabel("Password:"), self.password_input)
-        form_layout.addRow(QLabel("New Points Balance:"), self.points_input)
+        self.update_button = QPushButton('Update Balance')
+        self.update_button.clicked.connect(self.update_balance)
 
-        button_scrape = QPushButton("Scrape for Vulnerabilities")
-        button_scrape.clicked.connect(self.scrape_vulnerabilities)
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.balance_label)
+        layout.addWidget(self.update_label)
+        layout.addWidget(self.points_input)
+        layout.addWidget(self.update_button)
 
-        button_update_points = QPushButton("Update Points Balance")
-        button_update_points.clicked.connect(self.update_points_balance)
-
-        layout.addLayout(form_layout)
-        layout.addWidget(button_scrape)
-        layout.addWidget(button_update_points)
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-    def scrape_vulnerabilities(self):
-        logger.info("Scraping for vulnerabilities")
-        try:
-            vulnerabilities = self.scraper.scrape()
-            self.database.save_vulnerabilities(vulnerabilities)
-            logger.info("Scraping completed and data saved")
-        except Exception as e:
-            logger.error(f"Error while scraping vulnerabilities: {e}")
+        self.fetch_balance()
 
-    def update_points_balance(self):
-        username = self.username_input.text()
-        password = self.password_input.text()
-        new_points = int(self.points_input.text())
-        logger.info(f"Updating points balance for user {username}")
-        try:
-            updated_points = self.scraper.manipulate_points(username, password, new_points)
-            logger.info(f"Updated points balance: {updated_points}")
-        except Exception as e:
-            logger.error(f"Error while updating points balance: {e}")
+    def set_dark_mode(self):
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #2e2e2e;
+                color: #ffffff;
+            }
+            QPushButton {
+                background-color: #5e5e5e;
+                color: #ffffff;
+            }
+            QLineEdit {
+                background-color: #4e4e4e;
+                color: #ffffff;
+            }
+        """)
 
-if __name__ == "__main__":
-    logger.info("Starting application")
+    def fetch_balance(self):
+        try:
+            response = requests.get('http://127.0.0.1:5000/get_points')
+            if response.status_code == 200:
+                balance = response.json().get('points_balance')
+                self.balance_label.setText(str(balance))
+            else:
+                self.balance_label.setText('Error fetching balance')
+        except Exception as e:
+            self.balance_label.setText(f'Error: {str(e)}')
+
+    def update_balance(self):
+        try:
+            new_points = int(self.points_input.text())
+            response = requests.post('http://127.0.0.1:5000/update_points', json={'new_points': new_points})
+            if response.status_code == 200:
+                self.fetch_balance()
+            else:
+                self.balance_label.setText('Error updating balance')
+        except Exception as e:
+            self.balance_label.setText(f'Error: {str(e)}')
+
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainWin = MainWindow()
-    mainWin.show()
+    main_window = MainWindow()
+    main_window.show()
     sys.exit(app.exec_())
-    logger.info("Application exited")
