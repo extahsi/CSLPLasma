@@ -8,7 +8,7 @@ import time
 def login_and_get_points(username, password):
     driver = None  # Initialize driver to None
     try:
-        # Initialize the Chrome driver
+        # Automatically download and setup the correct chromedriver
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
         # Open the login page
