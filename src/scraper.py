@@ -39,3 +39,4 @@ def login_and_get_points(username, password):
     except Exception as e:
         driver.quit()
         raise e
+
