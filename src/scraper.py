@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 def login_and_get_points(username, password):
+    driver = None  # Initialize driver to None
     try:
         # Initialize the Chrome driver
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -24,7 +25,6 @@ def login_and_get_points(username, password):
         time.sleep(5)
 
         # Navigate to the page showing the points balance
-        # This URL might change, so update as necessary
         driver.get('https://rewards.cslplasma.com/rewards/points_balance')
         time.sleep(3)
 
@@ -37,6 +37,7 @@ def login_and_get_points(username, password):
 
         return points_balance
     except Exception as e:
-        driver.quit()
+        if driver:
+            driver.quit()  # Ensure the driver is closed if an exception occurs
         raise e
 
