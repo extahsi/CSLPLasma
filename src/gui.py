@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QPushButton, QWidget, QLineEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QPushButton, QWidget, QLineEdit, QHBoxLayout
 import requests
 
 class MainWindow(QMainWindow):
@@ -20,12 +20,20 @@ class MainWindow(QMainWindow):
         self.update_button = QPushButton('Update Balance')
         self.update_button.clicked.connect(self.update_balance)
 
+        self.refresh_button = QPushButton('Refresh Balance')
+        self.refresh_button.clicked.connect(self.fetch_balance)
+
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(self.balance_label)
-        layout.addWidget(self.update_label)
-        layout.addWidget(self.points_input)
-        layout.addWidget(self.update_button)
+
+        refresh_layout = QHBoxLayout()
+        refresh_layout.addWidget(self.update_label)
+        refresh_layout.addWidget(self.points_input)
+        refresh_layout.addWidget(self.update_button)
+        refresh_layout.addWidget(self.refresh_button)
+
+        layout.addLayout(refresh_layout)
 
         container = QWidget()
         container.setLayout(layout)
