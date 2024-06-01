@@ -1,15 +1,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 def login_and_get_points(username, password):
     driver = None  # Initialize driver to None
     try:
-        # Automatically download and setup the correct chromedriver
-        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        # Specify the path to the chromedriver executable
+        chromedriver_path = '/usr/local/bin/'  # Update with your actual path
+        driver = webdriver.Chrome(executable_path=chromedriver_path)
 
         # Open the login page
         driver.get('https://rewards.cslplasma.com/rewards')
