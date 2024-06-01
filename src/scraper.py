@@ -7,7 +7,7 @@ def login_and_get_points(username, password):
     driver = None  # Initialize driver to None
     try:
         # Specify the path to the chromedriver executable
-        chromedriver_path = '/usr/local/bin/'  # Update with your actual path
+        chromedriver_path = '/usr/local/bin'  # Update with your actual path
         driver = webdriver.Chrome(executable_path=chromedriver_path)
 
         # Open the login page
