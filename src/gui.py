@@ -1,6 +1,31 @@
+
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QPushButton, QWidget, QLineEdit, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QPushButton, QWidget, QLineEdit, QHBoxLayout, QDialog, QFormLayout, QDialogButtonBox
 import requests
+from scraper import login_and_get_points
+
+class LoginDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Login')
+        
+        self.username = QLineEdit()
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
+        
+        layout = QFormLayout()
+        layout.addRow('Username:', self.username)
+        layout.addRow('Password:', self.password)
+        
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+        
+        layout.addWidget(self.buttons)
+        self.setLayout(layout)
+    
+    def get_credentials(self):
+        return self.username.text(), self.password.text()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -13,7 +38,7 @@ class MainWindow(QMainWindow):
 
         self.label = QLabel('Current Points Balance: ')
         self.balance_label = QLabel('Fetching...')
-        
+
         self.update_label = QLabel('Update Points Balance:')
         self.points_input = QLineEdit()
 
@@ -22,6 +47,9 @@ class MainWindow(QMainWindow):
 
         self.refresh_button = QPushButton('Refresh Balance')
         self.refresh_button.clicked.connect(self.fetch_balance)
+
+        self.login_button = QPushButton('Login')
+        self.login_button.clicked.connect(self.login)
 
         layout = QVBoxLayout()
         layout.addWidget(self.label)
@@ -32,14 +60,13 @@ class MainWindow(QMainWindow):
         refresh_layout.addWidget(self.points_input)
         refresh_layout.addWidget(self.update_button)
         refresh_layout.addWidget(self.refresh_button)
+        refresh_layout.addWidget(self.login_button)
 
         layout.addLayout(refresh_layout)
 
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
-
-        self.fetch_balance()
 
     def set_dark_mode(self):
         self.setStyleSheet("""
@@ -78,6 +105,16 @@ class MainWindow(QMainWindow):
                 self.balance_label.setText('Error updating balance')
         except Exception as e:
             self.balance_label.setText(f'Error: {str(e)}')
+
+    def login(self):
+        dialog = LoginDialog()
+        if dialog.exec_():
+            username, password = dialog.get_credentials()
+            try:
+                points_balance = login_and_get_points(username, password)
+                self.balance_label.setText(points_balance)
+            except Exception as e:
+                self.balance_label.setText(f'Error: {str(e)}')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
