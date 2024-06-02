@@ -1,3 +1,4 @@
 {
-    "url": "https://rewards.cslplasma.com/rewards"
+    "login_url": "https://rewards.cslplasma.com/login",
+    "api_url": "http://127.0.0.1:5000/update_points"
 }
