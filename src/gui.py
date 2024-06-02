@@ -1,8 +1,9 @@
 import sys
 import json
 import logging
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QPushButton, QLineEdit, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QPushButton, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt
+import requests
 from scraper import login_and_get_points
 
 # Configure logging
