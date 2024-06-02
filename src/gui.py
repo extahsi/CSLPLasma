@@ -144,19 +144,3 @@ def run_scraper():
         messagebox.showinfo("Success", "Points balance updated successfully.")
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Failed to update points balance: {e}")
-
-# GUI setup
-root = tk.Tk()
-root.title("CSL Plasma Points Updater")
-
-tk.Label(root, text="Username:").grid(row=0, column=0, padx=10, pady=10)
-username_entry = tk.Entry(root)
-username_entry.grid(row=0, column=1, padx=10, pady=10)
-
-tk.Label(root, text="Password:").grid(row=1, column=0, padx=10, pady=10)
-password_entry = tk.Entry(root, show='*')
-password_entry.grid(row=1, column=1, padx=10, pady=10)
-
-tk.Button(root, text="Update Points", command=run_scraper).grid(row=2, columnspan=2, pady=20)
-
-root.mainloop()
