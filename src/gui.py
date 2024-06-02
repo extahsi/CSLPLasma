@@ -24,6 +24,15 @@ class MainWindow(QMainWindow):
         self.layout = QVBoxLayout()
         self.central_widget.setLayout(self.layout)
 
+        self.username_input = QLineEdit()
+        self.username_input.setPlaceholderText('Enter username')
+        self.layout.addWidget(self.username_input)
+
+        self.password_input = QLineEdit()
+        self.password_input.setPlaceholderText('Enter password')
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.layout.addWidget(self.password_input)
+
         self.points_label = QLabel('Points Balance: Not Retrieved')
         self.layout.addWidget(self.points_label)
 
@@ -88,9 +97,8 @@ class MainWindow(QMainWindow):
             logging.error(f'Error saving config file: {e}')
 
     def refresh_points_balance(self):
-        # For this example, we'll use dummy credentials
-        username = 'your_username'
-        password = 'your_password'
+        username = self.username_input.text()
+        password = self.password_input.text()
         try:
             points_balance = login_and_get_points(username, password, self.url)
             self.points_label.setText(f'Points Balance: {points_balance}')
