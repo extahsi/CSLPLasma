@@ -44,8 +44,9 @@ def login_and_get_points(username, password, url):
 
         # Find the points balance element on the page
         logging.info('Fetching points balance')
-        points_balance_element = driver.find_element(By.ID, 'points_balance')  # Update this to the correct selector
-        points_balance = points_balance_element.text
+        points_element = driver.find_element(By.CSS_SELECTOR, '.col-10.pl-0.mt-1 p')
+        points_text = points_element.text
+        points_balance = int(points_text.split()[0])  # Extracting the numeric value
         logging.info(f'Points balance retrieved: {points_balance}')
 
         driver.quit()
