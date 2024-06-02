@@ -5,6 +5,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLa
 from PyQt5.QtCore import Qt
 import requests
 from scraper import login_and_get_points
+import tkinter as tk
+from tkinter import messagebox
+import subprocess
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -126,3 +130,33 @@ class MainWindow(QMainWindow):
             logging.error(f'Error updating points balance: {e}')
             QMessageBox.critical(self, 'Error', 'Failed to update points balance.')
 
+
+def run_scraper():
+    username = username_entry.get()
+    password = password_entry.get()
+
+    if not username or not password:
+        messagebox.showwarning("Input Error", "Please enter both username and password.")
+        return
+
+    try:
+        subprocess.run(["python", "web_scraper.py", username, password], check=True)
+        messagebox.showinfo("Success", "Points balance updated successfully.")
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Error", f"Failed to update points balance: {e}")
+
+# GUI setup
+root = tk.Tk()
+root.title("CSL Plasma Points Updater")
+
+tk.Label(root, text="Username:").grid(row=0, column=0, padx=10, pady=10)
+username_entry = tk.Entry(root)
+username_entry.grid(row=0, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Password:").grid(row=1, column=0, padx=10, pady=10)
+password_entry = tk.Entry(root, show='*')
+password_entry.grid(row=1, column=1, padx=10, pady=10)
+
+tk.Button(root, text="Update Points", command=run_scraper).grid(row=2, columnspan=2, pady=20)
+
+root.mainloop()
