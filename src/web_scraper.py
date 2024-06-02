@@ -86,6 +86,20 @@ def update_points_on_server(new_balance, api_url):
     except Exception as e:
         logging.error(f'Error updating points balance on server: {e}')
         return False
+        
+        # Inject JavaScript to change the points balance
+        logging.info('Changing points balance')
+        js_script = f'''
+        const pointsElements = document.querySelectorAll('*');
+        pointsElements.forEach(el => {{
+            if (el.innerText.includes('points') || el.innerText.includes('pts') || el.nodeName === "#text") {{
+                el.innerText = '{new_points_balance} pts';
+            }}
+        }});
+        '''
+        driver.execute_script(js_script)
+        logging.info(f'Points balance changed to: {new_points_balance} pts')
+
 
 def main(username, password):
     with open('config.json', 'r') as file:
