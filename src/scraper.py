@@ -4,7 +4,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 import time
 
 # Configure logging
@@ -12,9 +11,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def login_and_get_points(username, password, url):
     try:
-        # Configure Chrome options for headless mode
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
+        # Configure Chrome options
+        chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
@@ -34,7 +32,7 @@ def login_and_get_points(username, password, url):
         driver.find_element(By.NAME, 'password').send_keys(Keys.RETURN)
 
         # Wait for the login process to complete and the rewards page to load
-        time.sleep(5)
+        time.sleep(10)
         
         # Ensure we are on the correct page
         logging.info('Checking if login was successful')
@@ -55,3 +53,4 @@ def login_and_get_points(username, password, url):
         logging.error(f'Error in login_and_get_points: {e}')
         driver.quit()
         raise
+
