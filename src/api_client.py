@@ -1,30 +1,33 @@
-# api_client.py
-
 import requests
+import logging
 
 class CSLPlasmaAPIClient:
     def __init__(self, base_url):
         self.base_url = base_url
+        self.logger = logging.getLogger(__name__)
 
     def get_points_balance(self, username, password):
-        # Define API endpoint for retrieving points balance
-        endpoint = f"{self.base_url}/login"
-        
-        # Create request payload with username and password
-        data = {
-            'username': username,
-            'password': password
-        }
-
+        endpoint = '/get_points'
+        url = self.base_url + endpoint
         try:
-            # Make HTTP POST request to authenticate and retrieve points balance
-            response = requests.post(endpoint, json=data)
-            response.raise_for_status()  # Raise an exception for any HTTP error
-            balance_data = response.json()
-
-            # Extract points balance from response data
-            points_balance = balance_data['points_balance']
+            response = requests.get(url, auth=(username, password))
+            response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+            data = response.json()
+            points_balance = data.get('points_balance')
             return points_balance
-        except requests.RequestException as e:
-            print(f"Error retrieving points balance: {e}")
+        except Exception as e:
+            self.logger.error(f"Error retrieving points balance: {e}")
+            return None
+
+    def update_points_balance(self, username, password, new_balance):
+        endpoint = '/update_points'
+        url = self.base_url + endpoint
+        try:
+            response = requests.post(url, json={'new_points': new_balance}, auth=(username, password))
+            response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+            data = response.json()
+            new_balance = data.get('new_balance')
+            return new_balance
+        except Exception as e:
+            self.logger.error(f"Error updating points balance: {e}")
             return None
