@@ -12,3 +12,4 @@ selenium==4.9.1
 tkinter
 subprocess
 messagebox
+gunicorn
