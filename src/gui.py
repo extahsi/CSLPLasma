@@ -126,9 +126,3 @@ class MainWindow(QMainWindow):
             logging.error(f'Error updating points balance: {e}')
             QMessageBox.critical(self, 'Error', 'Failed to update points balance.')
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
-    sys.exit(app.exec_())
-
