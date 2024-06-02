@@ -48,7 +48,6 @@ class MainWindow(QMainWindow):
         self.update_url_button.clicked.connect(self.update_url)
         self.layout.addWidget(self.update_url_button)
 
-        # Add input for new points balance
         self.points_input = QLineEdit()
         self.points_input.setPlaceholderText('Enter new points balance')
         self.layout.addWidget(self.points_input)
