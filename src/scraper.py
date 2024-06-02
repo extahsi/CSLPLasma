@@ -16,6 +16,7 @@ def login_and_get_points(username, password, url):
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--start-maximized')
 
         # Setup Chrome driver
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
@@ -53,4 +54,3 @@ def login_and_get_points(username, password, url):
         logging.error(f'Error in login_and_get_points: {e}')
         driver.quit()
         raise
-
