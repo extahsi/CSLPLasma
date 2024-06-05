@@ -1,14 +1,13 @@
 import sys
 import logging
+import requests
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
-
-from scraper import change_points_balance
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('CSL Plasma Points Changer')
-        self.setGeometry(100, 100, 400, 200)
+        self.setGeometry(100, 100, 600, 400)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -48,7 +47,15 @@ class MainWindow(QMainWindow):
 
         try:
             new_points_balance = int(new_points_balance)
-            updated_balance = change_points_balance(username, password, new_points_balance)
+            response = requests.post('http://127.0.0.1:5000/update_points', json={
+                'username': username,
+                'password': password,
+                'new_points_balance': new_points_balance
+            })
+            response_data = response.json()
+            if 'error' in response_data:
+                raise Exception(response_data['error'])
+            updated_balance = response_data['new_balance']
             QMessageBox.information(self, 'Success', f'Points balance updated to: {updated_balance}')
         except ValueError:
             QMessageBox.warning(self, 'Error', 'Points balance must be a number.')
