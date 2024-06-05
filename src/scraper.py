@@ -6,10 +6,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def login_and_get_points(username, password, url):
+def change_points_balance(username, password, new_points_balance):
+    url = "https://rewards.cslplasma.com/login"
     try:
         # Configure Chrome options
         chrome_options = webdriver.ChromeOptions()
@@ -42,16 +42,38 @@ def login_and_get_points(username, password, url):
             driver.quit()
             raise Exception('Failed to log in')
 
-        # Find the points balance element on the page
-        logging.info('Fetching points balance')
-        points_element = driver.find_element(By.CSS_SELECTOR, '.col-10.pl-0.mt-1 p')
-        points_text = points_element.text
-        points_balance = int(points_text.split()[0])  # Extracting the numeric value
-        logging.info(f'Points balance retrieved: {points_balance}')
+        # Inject JavaScript to change the points balance
+        logging.info('Changing points balance')
+        js_script = f'''
+        const pointsElements = document.querySelectorAll('*');
+        pointsElements.forEach(el => {{
+            if (el.nodeType === Node.TEXT_NODE && el.nodeValue.trim().match(/^\\d+$/)) {{
+                el.nodeValue = '{new_points_balance}';
+            }} else if (el.innerText && (el.innerText.includes('points') || el.innerText.includes('pts') || el.innerText.includes('#text'))) {{
+                el.innerText = '{new_points_balance} pts';
+            }}
+        }});
+        '''
+        driver.execute_script(js_script)
+        logging.info(f'Points balance changed to: {new_points_balance} pts')
+
+        # Verify the change
+        time.sleep(5)  # Wait to see the change
+        logging.info('Fetching updated points balance')
+        updated_points_element = driver.find_element(By.CSS_SELECTOR, '.col-10.pl-0.mt-1 p')
+        updated_points_text = updated_points_element.text
+        updated_points_balance = int(updated_points_text.split()[0])  # Extracting the numeric value
+
+        if updated_points_balance != new_points_balance:
+            logging.error('Failed to change the points balance')
+            driver.quit()
+            raise Exception('Failed to change the points balance')
+
+        logging.info(f'Updated points balance retrieved: {updated_points_balance}')
 
         driver.quit()
-        return points_balance
+        return updated_points_balance
     except Exception as e:
-        logging.error(f'Error in login_and_get_points: {e}')
+        logging.error(f'Error in change_points_balance: {e}')
         driver.quit()
         raise
