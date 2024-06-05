@@ -68,9 +68,8 @@ jobs:
        - name: Import results
          uses: github/codeql-action/upload-sarif@v2
          with:
-          sarif_file: ./apisec-results.sarif
-
-                      - name: Setup Go environment
+          sarif_file: ./apisec-results.sarif  
+      - name: Setup Go environment
   uses: actions/setup-go@v5.0.1
   with:
     # The Go version to download (if necessary) and use. Supports semver spec and ranges. Be sure to enclose this option in single quotation marks.
